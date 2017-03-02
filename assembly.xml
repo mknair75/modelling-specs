@@ -30,6 +30,7 @@
                 <include>**/*.docx</include>
                 <include>**/*.rst</include>
                 <include>**/*.txt</include>
+                <include>**/*.yaml</include>
             </includes>
         </fileSet>
     </fileSets>
