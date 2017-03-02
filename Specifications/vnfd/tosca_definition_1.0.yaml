@@ -807,12 +807,6 @@ data_types:
         type: string
         required: false
 
-##########################################################################
- # Artifact Type.
- # An Artifact Type is a reusable entity that defines the type of one or more
- # files which Node Types or Node Templates can have dependent relationships
- # and used during operations such as during installation or deployment.
-##########################################################################
 artifact_types:
   tosca.artifacts.Root:
     description: >
