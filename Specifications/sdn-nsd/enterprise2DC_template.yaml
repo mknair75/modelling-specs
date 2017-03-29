@@ -24,7 +24,7 @@ imports:
 
 metadata:
     id: enterprise2Dc
-    template_name: enterprise2Dc
+    template_name: enterprise2DC
     version: 0.1
     vendor: sdno
     template_author: Huawei
@@ -73,6 +73,12 @@ topology_template:
                 type: integer
                 description: vpc subnet vxlanID, should keep consistent with NFVO
                 default: 0
+            vpnType:
+                type: string
+                description: vpn connection type between vCPE and vpc.
+                constraints:
+                    - valid_values: ['IpSec','VxLAN','MPLS_VPN']
+                default: IpSec
             dcGwIp:
                 type: string
                 description: mgrIp of dcGW
@@ -174,6 +180,7 @@ topology_template:
                 properties:
                     vni:        {get_input: siteVni}
                     cidrBlock:  {get_input: siteCidr}
+                    name:       {concat: ['siteSubnet_' , {get_input: vpcName}]}
                 requirements:
                     - realizes: vlan
 
@@ -181,6 +188,7 @@ topology_template:
                 type: sdno.node.Connection.Vlan
                 properties:
                     vlanId:     {get_input: subnetVlan}
+                    name:       {concat: ['vlan_' , {get_input: vpcName}]}
                 requirements:
                     - realizes: site
 
@@ -200,6 +208,7 @@ topology_template:
                 type: sdno.node.Connection.Site
                 properties:
                     name:       {get_input: siteName}
+                    siteDescriptor: {get_input: vpnType}
                 requirements:
                     - endPoint: vCpeConnectionEndPoint
                     - endPoint: thinCpeConnectionEndPoint
@@ -215,18 +224,25 @@ topology_template:
                 properties:
                     name: {get_input: vpnName}
                     description: {get_input: vpnDescription}
+                    vpnDescriptor: {get_input: vpnType}
                 requirements:
                     - realizes: vpnConnection
 
 
             siteGateway:
                 type: sdno.node.ConnectionEndPoint.SiteGateway
+                properties:
+                    name:       {concat: ['siteGateway_' , {get_input: vpcName}]}
 
             vpcGateway:
                 type: sdno.node.ConnectionEndPoint.VpcGateway
+                properties:
+                    name:       {concat: ['vpcGateway_' , {get_input: vpcName}]}
 
             vpnConnection:
                 type: sdno.node.Connection.VpnConnection
+                properties:
+                    name:       {concat: ['vpnConnection_' , {get_input: vpcName}]}
                 requirements:
                     - endPoint: siteGateway
                     - endPoint: vpcGateway
@@ -240,6 +256,7 @@ topology_template:
                 type: sdno.node.Connection.Sfc
                 properties:
                     servicePathHops: 
-                        - {hopNumber: 1, sfiId: {get_attribute: [dcFw, id] }, sfgId: null}
-                        - {hopNumber: 2, sfiId: {get_attribute: [dcLb, id] }, sfgId: null}
+                        - {hopNumber: 1, sfiId: {get_attribute: [dcFw, id] }, sfgId: "", name: 'dcFw'}
+                        - {hopNumber: 2, sfiId: {get_attribute: [dcLb, id] }, sfgId: "", name: 'dcLb'}
                     scfNeId: {get_attribute: [dcGw, id]}
+                    name:    {concat: ['sfc_' , {get_input: vpcName}]}
