@@ -432,6 +432,15 @@ node_types:
                             - sdno.node.Connection.SiteSubnet/deploy
                             - sdno.node.Connection.Vpn/deploy
                             - sdno.node.Connection.Sfc/deploy
+                undeploy: 
+                    description: "Deploy Enterprise2Dc"
+                    implementation:
+                        # primary:
+                        dependencies:
+                            - sdno.node.Connection.VpcSubnet/undeploy
+                            - sdno.node.Connection.SiteSubnet/undeploy
+                            - sdno.node.Connection.Vpn/undeploy
+                            - sdno.node.Connection.Sfc/undeploy
  
 # MUST FIND ANOTHER WAY TO RESTRICT THE SPECIFIC NETWORK HIERARCHY FOR THE SERVICE AT THE SERVICE DEFINITION LAYER
 # CURRENTLY ENFORCED IN THE TEMPLATE
@@ -521,7 +530,11 @@ node_types:
                             - sdno.node.Connection.Vpc/deploy
                             - sdno.node.Connection.VpcSubnet/deploy
                 undeploy:
-                    implementation: 'DELETE /openoapi/sdnovpc/v1/subnets/{subnetId}'
+                    implementation: 
+                        primary: 'DELETE /openoapi/sdnovpc/v1/subnets/{subnetId}'
+                        dependencies: 
+                            - sdno.node.Connection.VpcSubnet/undeploy                        
+                            - sdno.node.Connection.Vpc/undeploy
                 update:
                     #implementation: 'PUT  /openoapi/sdnovpc/v1/subnet/{subnetId}'
 
@@ -599,7 +612,14 @@ node_types:
                             - sdno.node.Connection.Vlan/deploy
                             - sdno.node.Connection.SiteSubnet/deploy
                 undeploy:
-                    implementation: 'DELETE /openoapi/sdnolocalsite/v1/subnets/{uuid}'
+                    implementation: 
+                        primary: 'DELETE /openoapi/sdnolocalsite/v1/subnets/{uuid}'
+                        dependencies: 
+                            - sdno.node.Connection.SiteSubnet/undeploy
+                            - sdno.node.Connection.Vlan/undeploy
+                            - sdno.node.ConnectionEndPoint.ThinCpe/undeploy
+                            - sdno.node.ConnectionEndPoint.VCpe/undeploy
+                            - sdno.node.ConnectionEndPoint.Site/undeploy
                 update:
                     implementation: 'PUT /openoapi/sdnolocalsite/v1/subnets/{uuid}'
 
@@ -955,7 +975,13 @@ node_types:
                             - sdno.node.Connection.Vpn/deploy
                             - sdno.node.Connection.VpnConnection/deploy
                 undeploy:
-                    implementation: 'DELETE /openoapi/sdnooverlay/v1/vpns/action/undeploy'
+                    implementation: 
+                        primary: 'DELETE /openoapi/sdnooverlay/v1/vpns/action/undeploy'
+                        dependencies:
+                            - sdno.node.Connection.VpnConnection/undeploy
+                            - sdno.node.ConnectionEndPoint.SiteGateway/undeploy
+                            - sdno.node.ConnectionEndPoint.VpcGateway/undeploy
+                            - sdno.node.Connection.Vpn/undeploy
                 update:
                     implementation: 'PUT /openoapi/sdnooverlay/v1/vpns/{uuid}'
 
@@ -1135,3 +1161,66 @@ node_types:
                     implementation: 'DELETE /openoapi/sdnoservicechain/v1/paths/{uuid}'
                 update: 
                     #implementation: 'PUT /openoapi/sdnoservicechain/v1/paths/{uuid}'
+
+    # ***************************************************************************** 
+    #            Onderlayvpn Node Types
+    # *****************************************************************************
+    tosca.nodes.sdno.NS.overlayvpn:
+        properties:
+            id:
+                type: string
+                required: false
+            template_name:
+                type: string
+                required: false
+            version:
+                type: string
+                required: false
+            vendor:
+                type: string
+                required: false
+            template_author:
+                type: string
+                required: false
+            vpnName:
+                type: string
+                required: false
+            vpnDescription:
+                type: string
+                required: false
+            siteName:
+                type: string
+                required: false
+            siteCidr:
+                type: string
+                required: false
+            subnetVlan:
+                type: integer
+                required: false
+            siteVni:
+                type: integer
+                required: false
+            vpcName:
+                type: string
+                required: false
+            vpcSubnetName:
+                type: string
+                required: false
+            vpcSubnetCidr:
+                type: string
+                required: false
+            vpcVni:
+                type: integer
+                required: false
+            vpnType:
+                type: string
+                required: false
+            dcGwIp:
+                type: string
+                required: false
+            dcFwIp:
+                type: string
+                required: false
+            dcLbIp:
+                type: string
+                required: false

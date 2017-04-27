@@ -36,43 +36,33 @@ topology_template:
             vpnName:
                 type: string
                 description: Name of Overlayvpn
-                default: 'none'
             vpnDescription:
                 type: string
                 description: description of Overlayvpn
-                default: 'none'
             siteName:
                 type: string
                 description: Name of Site
-                default: 'none'
             siteCidr:
                 type: string
                 description: enterprise site cidr
-                default: 'none'
             subnetVlan:
                 type: integer
                 description: Vlan value of Subnet
-                default: 0
             siteVni:
                 type: integer
                 description: VxLAN ID connect site to vCPE
-                default: 0
             vpcName:
                 type: string
-                description: in format of domain/project, should keep consistent with NFVO
-                default: 'none'
+                description: in format of domain/project/router, should keep consistent with NFVO
             vpcSubnetName:
                 type: string
                 description: name of subnet in VPC, should keep consistent with NFVO
-                default: 'none'
             vpcSubnetCidr:
                 type: string
                 description: vpc cidr
-                default: 'none'
             vpcVni:
                 type: integer
                 description: vpc subnet vxlanID, should keep consistent with NFVO
-                default: 0
             vpnType:
                 type: string
                 description: vpn connection type between vCPE and vpc.
@@ -82,15 +72,12 @@ topology_template:
             dcGwIp:
                 type: string
                 description: mgrIp of dcGW
-                default: 'none'
             dcFwIp:
                 type: string
                 description: mgrIp of dc Firewall
-                default: 'none'
             dcLbIp:
                 type: string
                 description: mgrIp of dc Load Balancer
-                default: 'none'
 
 # *****************************************************************************
 # node templates
@@ -260,3 +247,6 @@ topology_template:
                         - {hopNumber: 2, sfiId: {get_attribute: [dcLb, id] }, sfgId: "", name: 'dcLb'}
                     scfNeId: {get_attribute: [dcGw, id]}
                     name:    {concat: ['sfc_' , {get_input: vpcName}]}
+
+        substitution_mappings: 
+            node_type: tosca.nodes.sdno.NS.overlayvpn

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
- 
+
 tosca_definitions_version: tosca_simple_yaml_1_0
 description: undelay vpn type definitions
 
@@ -31,29 +31,29 @@ imports:
 # DSL definitions
 # *****************************************************************************
 dsl_definitions:
- 
+
 # *****************************************************************************
 # data types
 # *****************************************************************************
-data_types:      
+data_types:
 
 
     # Base SDNO Type for Specs - used in Underlay VPN only for now, check reuse and move to common if needed. May need to move iot from type to node
     sdno.datatypes.Spec:
         derived_from: tosca.datatypes.Root
-        properties:            
+        properties:
             uuid:
                 type: string
                 description: unique id, format maxLength36
                 required: true
-                default: none
+                default: 'none'
             additionalInfo:
                 type: list
                 #max size = 1000
-                entry_schema:                     
+                entry_schema:
                     type: AdditionalInfoRow
                 required: false
- 
+
     # PW Schema Type
 
     PWSchema: 
@@ -64,12 +64,12 @@ data_types:
                 description: PW Technology
                 required: true
                 default: 'none'
- 
+
     # Tunnel Schema Type
 
     TunnelSchema:
-        derived_from: sdno.datatypes.Spec        
-        properties:            
+        derived_from: sdno.datatypes.Spec
+        properties:
             tunnelTech:
                 type: string
                 description: Technology used for the tunnel
@@ -101,9 +101,9 @@ data_types:
                 type: SelectTunnelPolicy
                 description: Policy for selecting the tunnel
                 required: false
- 
+
     PWSpec:
-        derived_from: sdno.datatypes.Spec        
+        derived_from: sdno.datatypes.Spec
         properties:
             controlWord:
                 type: boolean
@@ -120,41 +120,41 @@ data_types:
 
 
     MplsTESpec:
-        derived_from: sdno.datatypes.Spec         
+        derived_from: sdno.datatypes.Spec
         properties:
             bestEffort:
                 type: string
                 description: max length 200
                 required: true
-                default: true
+                default: 'true'
             shareMode:
                 type: string
                 description: Tunnel sharing mode
                 constraints:
                     - valid_values: ['delegate','1:1','N:1']
                 required: true
-                default: 'N:1'   
-            coRoute:     
+                default: 'N:1'
+            coRoute:
                 type: boolean
                 description: max length 200
                 required: true
                 default: false
-            bfdEnable:     
+            bfdEnable:
                 type: boolean
                 description: max length 200
                 required: true
                 default: true
-            pathConstraint:     
+            pathConstraint:
                 type: TunnelPathConstraint
-                description: 
+                description:
                 required: false
-            tunnelProtectPolicy:     
+            tunnelProtectPolicy:
                 type: ProtectionSchema
                 description: 
                 required: false
 
     TunnelPathConstraint:
-        derived_from: sdno.datatypes.Spec         
+        derived_from: sdno.datatypes.Spec
         properties:
             setupPriority:
                 type: integer
@@ -181,7 +181,7 @@ data_types:
                 type: string
                 description: type of protection
                 constraints:
-                    - valid_values: ['nop','1:1','1+1','hot-standby']                
+                    - valid_values: ['nop','1:1','1+1','hot-standby']
                 required: true
                 default: '1:1'
             protectDetailType:
@@ -192,7 +192,7 @@ data_types:
                 type: string
                 description: Reversion Mode
                 constraints:
-                    - valid_values: ['RM_UNKNOWN','RM_NON_REVERTIVE','RM_REVERTIVE']     
+                    - valid_values: ['RM_UNKNOWN','RM_NON_REVERTIVE','RM_REVERTIVE']
                 required: true
                 default: 'RM_REVERTIVE'
             wtr:
@@ -200,7 +200,7 @@ data_types:
                 description: format int32 minimum 0, maximum 2592000
                 required: true
                 default: 1
-          
+
     SelectTunnelPolicy:
         derived_from: sdno.datatypes.Spec
         properties:
@@ -210,7 +210,9 @@ data_types:
                 required: true
                 default: 1
             selectTunnels:
-                type: SelectTunnel
+                type: list
+                entry_schema:
+                    type: SelectTunnel
                 description: Tunnel Selection Policy
                 required: true
 
@@ -273,9 +275,9 @@ data_types:
                 required: true
             bindingTunnels:
                  type: list
-                 entry_schema:                     
+                 entry_schema:
                      type: string
- 
+
     PathConnection:
         derived_from: sdno.datatypes.Spec
         properties:
@@ -311,7 +313,7 @@ data_types:
                 constraints:
                     - valid_values: ['Nop','SEG-VPN','TP','TPL','BUSINESSTYPE','COMPOSED-VPN', 'RESOURCE-POOL', 'SUBNETWORK', 'TUNNEL-LSP']
                 required: true
- 
+
     PWSpecPathConstraint:
         derived_from: sdno.datatypes.Spec
         properties:
@@ -330,9 +332,10 @@ data_types:
                 constraints:
                     - valid_values: ['NOP','LDP','RSVP-TE','SR-TE','MPLS-TP','TE-ANY','TE','GRE']
                 required: true
- 
+
+
      # VPN TYPES
-              
+
     DiffService:
         derived_from: sdno.datatypes.Spec 
         properties:
@@ -357,7 +360,7 @@ data_types:
                     - valid_values: ['Green','Yellow','Red']
                 required: true
                 default: 'Green'
- 
+
     IpVpnSpec:
         derived_from: sdno.datatypes.Spec
         properties:
@@ -377,7 +380,7 @@ data_types:
                 type: DiffService
                 description: diff service type
                 required: true
-            
+
     VpnBasicInfo:
         derived_from: sdno.datatypes.Spec
         properties:
@@ -428,9 +431,9 @@ data_types:
             ethernetTpSpec:
                 required: false
                 type: EthernetTpSpec
-            IpTpSpec:
+            ipTpSpec:
                 required: false
-                type: ipTpSpec
+                type: IpTpSpec
 
 
     EthernetTpSpec:
@@ -486,7 +489,7 @@ data_types:
         derived_from: sdno.datatypes.Spec
         properties:
             todo:
-                type: string    
+                type: string
                 required: true
                 default: 'none'
 
@@ -515,7 +518,7 @@ node_types:
             svlan:
                 type: integer
                 required: true
-                default: '0'
+                default: 0
             route:
                 type: string
                 required: true
@@ -525,7 +528,6 @@ node_types:
                 required: true
                 default: '0.0.0.0'
 
-            
     # ***************************************************************************** 
     #            Underlay VPN Connectivity Service
     # *****************************************************************************
@@ -535,11 +537,11 @@ node_types:
         interfaces:
             standard:
                 type: sdno.interfaces.lifecycle.Standard
-                deploy: 
+                deploy:
                     description: "Deploy VPN"
                     implementation:
                         # primary: 
-                        dependencies: 
+                        dependencies:
                             - sdno.node.Connection.UnderlayVpn/deploy
 
         requirements: 
@@ -560,6 +562,9 @@ node_types:
         description: Attach Circuit
         derived_from: sdno.node.ConnectionEndPoint
         properties:
+            neId:
+                type: string
+                required: false
             edgePointRole:
                 type: string
                 description: Role of the edge point
@@ -590,7 +595,7 @@ node_types:
             typeSpecList:
                 type: list
                 #max size = 1000
-                entry_schema:                     
+                entry_schema:
                     type: TpTypeSpec
                 required: false
             peerCpTp:
@@ -617,7 +622,7 @@ node_types:
             routeProtocolSpecs:
                 type: list
                 #max size = 1000
-                entry_schema:                     
+                entry_schema:
                     type: RouteProtocolSpec
                 required: false
             direction:
@@ -638,34 +643,34 @@ node_types:
     # ***************************************************************************** 
     #            VPN Node Types
     # *****************************************************************************
- 
     sdno.node.Connection.UnderlayVpn:
         derived_from: sdno.node.Connection
         properties:
             pwSchema:
                 type: PWSchema
-                required: true
+                required: false
             tunnelSchema:
                 type: TunnelSchema
-                required: true
+                required: false
             pathConstraints:
                 type: PathConstraints
                 required: false
             vpnBasicInfo:
                 type: VpnBasicInfo
-                required: true
+                required: false
 
-        requirements: 
+        requirements:
             - endPoint:
                 node: sdno.node.ConnectionEndPoint.Tp
                 capability: sdno.capability.ConnectionEndPoint
                 relationship: sdno.relationship.ConnectionEndPoint
                 occurrences: [2, UNBOUNDED]
  
+
         interfaces:
             standard:
                 type: sdno.interfaces.lifecycle.Standard
-                create: 
+                create:
                     #implementation: 'POST /openoapi/sdnol3vpn/v1/l3vpns'
                 delete:
                     implementation: 'DELETE /openoapi/sdnol3vpn/v1/l3vpns/{uuid}'
@@ -677,3 +682,75 @@ node_types:
                     implementation: 'DELETE /openoapi/sdnol3vpn/v1/l3vpns/{uuid}'
                 update: 
                     #implementation: 'PUT /openoapi/sdnol3vpn/v1/l3vpns/{uuid}'
+    
+    # ***************************************************************************** 
+    #            Underlayvpn Node Types
+    # *****************************************************************************
+    tosca.nodes.sdno.NS.underlayvpn:
+        properties:
+            id:
+                type: string
+                required: false
+            template_name:
+                type: string
+                required: false
+            version:
+                type: string
+                required: false
+            vendor:
+                type: string
+                required: false
+            template_author:
+                type: string
+                required: false
+            name:
+                type: string
+                required: false
+            description:
+                type: string
+                required: false
+            serviceType:    
+                type: string
+                required: false
+            topology:
+                type: string
+                required: false
+            technology:
+                type: string
+                required: false
+            pe1_ip:
+                type: string
+                required: false
+            ac1_port:
+                type: string
+                required: false
+            ac1_svlan:
+                type: integer
+                required: false
+            ac1_ip:
+                type: string
+                required: false
+            ac1_peer_ip:
+                type: string
+                required: false
+            ac1_route:
+                type: string
+                required: false
+            pe2_ip:
+                type: string
+                required: false
+            ac2_port:
+                type: string
+                required: false
+            ac2_svlan:
+                type: integer
+                required: false
+            ac2_ip:
+                type: string
+                required: false
+            ac2_peer_ip:
+                type: string
+                required: false
+            ac2_route:
+                type: string
+                required: false

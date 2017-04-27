@@ -18,13 +18,13 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 description: creates underlay vpn connection, l3 vpn template
 imports:
-     - Definitions/vpnUnderlay_type_definition.yaml
+     - Definitions/underlayVPN_type_definition.yaml
 
 ###############################################################################
 
 metadata:
     id: vpnUnderlayL3
-    template_name: vpnUnderlayL3
+    template_name: underlayvpn
     version: 0.1
     vendor: sdno
     template_author: Huawei
@@ -36,11 +36,9 @@ topology_template:
         name:
             type: string
             description: Name of underlayervpn
-            default: 'none'
         description:
             type: string
             description: description of underlayvpn
-            default: 'none'
         serviceType:
             type: string
             description: serviceType of underlayvpn
@@ -48,7 +46,7 @@ topology_template:
         topology:
             type: string
             description: topology of underlayvpn
-            default: 'point_to_point'
+            default: 'full-mesh'
         technology:
             type: string
             description: technology of underlayvpn
@@ -56,51 +54,39 @@ topology_template:
         pe1_ip:    
             type: string
             description: mgrip of pe1
-            default: 'none'
         ac1_port:
             type: string
             description: ac1 port
-            default: 'none'
         ac1_svlan:
             type: integer
             description: ac1 svlan
-            default: 0
         ac1_ip:
             type: string
             description: ip of ac1, only for layer3 vpn
-            default: 'none'
         ac1_peer_ip:
             type: string
             description: ip of ac1 peer CE tp, only for layer3 vpn
-            default: 'none'
         ac1_route:
             type: string
             description: route configure of ac1, only for layer3 vpn
-            default: 'none'
         pe2_ip:    
             type: string
             description: mgrip of pe2
-            default: 'none'
         ac2_port:
             type: string
             description: ac2 port
-            default: 'none'
         ac2_svlan:
             type: integer
             description: ac2 svlan
-            default: 0
         ac2_ip:
             type: string
             description: ip of ac2, only for layer3 vpn
-            default: 'none'
         ac2_peer_ip:
             type: string
             description: ip of ac2 peer CE tp, only for layer3 vpn
-            default: 'none'
         ac2_route:
             type: string
             description: route configure of ac2, only for layer3 vpn
-            default: 'none'
 
 
 # *****************************************************************************
@@ -114,12 +100,12 @@ topology_template:
             type: sdno.node.Node
             properties:
                 ipAddress: {get_input: pe1_ip}
- 
+
         pe2:
             type: sdno.node.Node
             properties:
                 ipAddress: {get_input: pe2_ip}
- 
+
 
     # Connectivity Service and Service Endpoints
 
@@ -135,31 +121,32 @@ topology_template:
         ac1:
             type: sdno.node.ServiceEndPoint.AC
             properties:
-                port: {get_input: ac1_port}    
+                port: {get_input: ac1_port}
                 ip: {get_input: ac1_ip}
-                svlan: {get_input: ac1_svlan}    
-                route: {get_input: ac1_route}                    
+                svlan: {get_input: ac1_svlan}
+                route: {get_input: ac1_route}
                 peerIp: {get_input: ac1_peer_ip}
             requirements:
                 - node: pe1
- 
+
         ac2:
             type: sdno.node.ServiceEndPoint.AC
-            properties:                                               
-                port: {get_input: ac2_port}    
+            properties:
+                port: {get_input: ac2_port}
                 ip: {get_input: ac2_ip}
-                svlan: {get_input: ac2_svlan}    
-                route: {get_input: ac2_route}                    
+                svlan: {get_input: ac2_svlan}
+                route: {get_input: ac2_route}
                 peerIp: {get_input: ac2_peer_ip}
             requirements:
                 - node: pe2
+
 
        # Connection and Connection Endpoints
 
         vpnConnection:
             type: sdno.node.Connection.UnderlayVpn
             properties:
-                name: {get_input: name}    
+                name: {get_input: name}
                 description: {get_input: description}
                 vpnBasicInfo:
                     serviceType: {get_input: serviceType}
@@ -171,8 +158,7 @@ topology_template:
 
             interfaces:
                 standard:
-                    type: sdno.interfaces.lifecycle.Standard
-                    create: 
+                    create:
                         #implementation: 'POST /openoapi/sdnol3vpn/v1/l3vpns'
                     delete:
                         implementation: 'DELETE /openoapi/sdnol3vpn/v1/l3vpns/{uuid}'
@@ -188,6 +174,8 @@ topology_template:
 
         tp1:
             type: sdno.node.ConnectionEndPoint.Tp
- 
+
         tp2:
             type: sdno.node.ConnectionEndPoint.Tp
+    substitution_mappings: 
+        node_type: tosca.nodes.sdno.NS.underlayvpn
